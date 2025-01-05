@@ -6,4 +6,7 @@ import pl.wsei.storespring.model.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
+
+    boolean existsByLogin(String login);
+
 }

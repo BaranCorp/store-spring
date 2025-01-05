@@ -1,6 +1,8 @@
 package pl.wsei.storespring.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +19,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
+@Validated
 public class UserController {
 
     private final UserService userService;
@@ -26,7 +29,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserDTO> createUser(@RequestBody UserService.CreateUserCommand command) {
+    public ResponseEntity<UserDTO> createUser(@Valid @RequestBody UserService.CreateUserCommand command) {
         return ResponseEntity
                 .status(201)
                 .body(new UserDTO(userService.create(command)));
@@ -35,7 +38,7 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity<UserDTO> updateUser(
         @PathVariable Long id,
-        @RequestBody UserService.UpdateUserCommand command
+        @RequestBody @Valid UserService.UpdateUserCommand command
     ) {
         return ResponseEntity.ok(new UserDTO(userService.update(id, command)));
     }
