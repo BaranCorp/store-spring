@@ -1,40 +1,76 @@
 package pl.wsei.storespring.dto;
 
 import pl.wsei.storespring.model.Basket;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class BasketDTO {
 	
-	long id;
+	Long id;
 	
-	String item;
+	List<ItemDTO> items;
 
-	public static BasketDTO fromEntity(Basket basket) {
+	public static BasketDTO createFrom(Basket basket) {
 		BasketDTO basketDTO = new BasketDTO();
 		basketDTO.id = basket.getId();
-		basketDTO.item = basket.getItem();
+		basketDTO.items = basket.getItems().stream()
+				.map(it -> {
+					ItemDTO itemDTO = new ItemDTO();
+					itemDTO.setId(it.getId());
+					itemDTO.setName(it.getName());
+					itemDTO.setQuantity(it.getQuantity());
+					return itemDTO;
+				})
+				.collect(Collectors.toList());
 		return basketDTO;
 	}
 
-	public static Basket toEntity(BasketDTO basketDTO) {
-		Basket basket = new Basket();
-		basket.setId(basketDTO.id);
-		basket.setItem(basketDTO.item);
-		return basket;
+	public static class ItemDTO {
+
+		Long id;
+
+		String name;
+
+		Integer quantity;
+
+		public Long getId() {
+			return id;
+		}
+
+		public void setId(Long id) {
+			this.id = id;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		public Integer getQuantity() {
+			return quantity;
+		}
+
+		public void setQuantity(Integer quantity) {
+			this.quantity = quantity;
+		}
 	}
 
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
-	public String getItem() {
-		return item;
+	public List<ItemDTO> getItems() {
+		return items;
 	}
 
-	public void setItem(String item) {
-		this.item = item;
+	public void setItems(List<ItemDTO> items) {
+		this.items = items;
 	}
 }

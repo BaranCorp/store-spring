@@ -9,11 +9,9 @@ import pl.wsei.storespring.dto.BasketDTO;
 import pl.wsei.storespring.model.Basket;
 import pl.wsei.storespring.service.BasketService;
 
-import java.util.List;
-
 @Tag(name = "Basket", description = "Basket management APIs")
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/baskets")
 public class BasketController {
 
 	private final BasketService basketService;
@@ -23,38 +21,71 @@ public class BasketController {
 		this.basketService = basketService;
 	}
 
-	@Operation(summary = "Get all baskets")
-	@GetMapping("/baskets")
-	public ResponseEntity<List<BasketDTO>> getAllBaskets() {
-		List<BasketDTO> baskets = basketService.getAllBaskets();
-		return ResponseEntity.ok(baskets);
-	}
-
 	@Operation(summary = "Get basket by ID")
-	@GetMapping("/basket/{id}")
+	@GetMapping("/{id}")
 	public ResponseEntity<BasketDTO> getBasketById(@PathVariable Long id) {
-		BasketDTO basket = basketService.getBasketById(id);
-		return ResponseEntity.ok(basket);
+		Basket basket = basketService.getById(id);
+		return ResponseEntity.ok(BasketDTO.createFrom(basket));
 	}
 
 	@Operation(summary = "Create a new basket")
-	@PostMapping("/basket")
+	@PostMapping
 	public ResponseEntity<Basket> createBasket(@RequestBody BasketDTO basket) {
 		Basket createdBasket = basketService.createBasket(basket);
 		return ResponseEntity.status(201).body(createdBasket);
 	}
 
-	@Operation(summary = "Update an existing basket")
-	@PutMapping("/basket/{id}")
-	public ResponseEntity<Basket> updateBasket(@PathVariable Long id, @RequestBody BasketDTO basket) {
-		Basket updatedBasket = basketService.updateBasket(id, basket);
-		return ResponseEntity.ok(updatedBasket);
-	}
-
 	@Operation(summary = "Delete a basket")
-	@DeleteMapping("/basket/{id}")
+	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> deleteBasket(@PathVariable Long id) {
 		basketService.deleteBasket(id);
 		return ResponseEntity.noContent().build();
 	}
+
+	@PutMapping("/{id}/items/change-item-quantity-command")
+	public ResponseEntity<Basket> updateItem(
+		@PathVariable Long id,
+		@RequestBody BasketService.UpdateItemCommand command
+	) {
+		return ResponseEntity.ok(
+			basketService.updateItem(
+				id,
+				command
+			)
+		);
+	}
+
+	@PutMapping("/{id}/items/add-item-command")
+	public ResponseEntity<Basket> addItem(
+		@PathVariable Long id,
+		@RequestBody BasketService.AddItemCommand command
+	) {
+		return ResponseEntity.ok(
+			basketService.addItem(
+				id,
+				command
+			)
+		);
+	}
+
+	@PutMapping("/{id}/items/remove-item-command")
+	public ResponseEntity<Basket> removeItem(
+		@PathVariable Long id,
+		@RequestBody BasketService.RemoveItemCommand command
+	) {
+		return ResponseEntity.ok(
+			basketService.removeItem(
+				id,
+				command
+			)
+		);
+	}
+
+	@PutMapping("/{id}/clear-basket-command")
+	public ResponseEntity<Basket> clearBasket(
+		@PathVariable Long id
+	) {
+		return ResponseEntity.ok(basketService.clearBasket(id));
+	}
+
 }

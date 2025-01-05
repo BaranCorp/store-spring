@@ -1,11 +1,14 @@
 package pl.wsei.storespring.service;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.wsei.storespring.dto.BasketDTO;
 import pl.wsei.storespring.exception.ResourceNotFoundException;
 import pl.wsei.storespring.model.Basket;
+import pl.wsei.storespring.model.Item;
 import pl.wsei.storespring.repository.BasketRepository;
+import pl.wsei.storespring.repository.ItemRepository;
 
 import java.util.List;
 
@@ -13,36 +16,81 @@ import java.util.List;
 public class BasketService {
 
 	private BasketRepository basketRepository;
+	private ItemRepository itemRepository;
 
 	@Autowired
-	public BasketService(BasketRepository basketRepository) {
+	public BasketService(
+			BasketRepository basketRepository,
+			ItemRepository itemRepository
+	) {
 		this.basketRepository = basketRepository;
+		this.itemRepository = itemRepository;
 	}
 
 	public Basket createBasket(BasketDTO basketDto) {
-		Basket basket = BasketDTO.toEntity(basketDto);
-		return basketRepository.save(basket);
-	}
-
-	public BasketDTO getBasketById(Long id) {
-		return BasketDTO.fromEntity(basketRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Basket not found")));
-	}
-
-	public List<BasketDTO> getAllBaskets() {
-		return basketRepository.findAll().stream().map(BasketDTO::fromEntity).toList();
-	}
-
-	public Basket updateBasket(Long id, BasketDTO basketDetails) {
-		Basket basket = basketRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Basket not found"));
-		basket.setItem(basketDetails.getItem());
+		Basket basket = new Basket(
+			basketDto.getId(),
+			basketDto.getItems().stream()
+					.map(it -> new Item(it.getId(), it.getName(), it.getQuantity()))
+					.toList()
+		);
+		itemRepository.saveAll(basket.getItems());
 		return basketRepository.save(basket);
 	}
 
 	public void deleteBasket(Long id) {
-		Basket basket = basketRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Basket not found"));
+		Basket basket = getById(id);
+		itemRepository.deleteAll(basket.getItems());
 		basketRepository.delete(basket);
 	}
+
+	public Basket getById(Long id) {
+		return basketRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Basket not found"));
+	}
+
+	public Basket updateItem(
+		Long id,
+		UpdateItemCommand command
+	) {
+		Basket basket = getById(id).updateItem(command);
+		itemRepository.saveAll(basket.getItems());
+		return basketRepository.save(basket);
+	}
+
+	public Basket addItem(Long id, AddItemCommand command) {
+		Basket updatedBasket = getById(id).addItem(command);
+		itemRepository.saveAll(updatedBasket.getItems());
+		return basketRepository.save(updatedBasket);
+	}
+
+	public Basket removeItem(
+		Long id,
+		RemoveItemCommand command
+	) {
+		Pair<Basket, Item> basketWithItemToRemove = getById(id).removeItem(command);
+		itemRepository.delete(basketWithItemToRemove.getRight());
+		return basketRepository.save(basketWithItemToRemove.getLeft());
+	}
+
+	public Basket clearBasket(Long id) {
+		Pair<Basket, List<Item>> basketWithItemsToDelete = getById(id).clearBasket();
+		itemRepository.deleteAll(basketWithItemsToDelete.getRight());
+		return basketRepository.save(basketWithItemsToDelete.getLeft());
+	}
+
+	public record UpdateItemCommand(
+		Long itemId,
+		Integer quantity
+	) {}
+
+	public record AddItemCommand(
+		String name,
+		Integer quantity
+	) {}
+
+	public record RemoveItemCommand(
+		Long itemId
+	) {}
+
 }
