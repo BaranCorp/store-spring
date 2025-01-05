@@ -6,6 +6,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import org.apache.commons.lang3.tuple.Pair;
 import pl.wsei.storespring.exception.ResourceNotFoundException;
 import pl.wsei.storespring.service.BasketService;
@@ -28,15 +29,21 @@ public class Basket {
 
 	private Integer discountPercent;
 
+	@OneToOne
+	@JoinColumn(name = "owner_id")
+	private User owner;
+
 	public Basket() {}
 
 	public Basket(
 		Long id,
-		List<Item> items
+		List<Item> items,
+		User owner
 	) {
 		this.id = id;
 		this.items = items;
 		this.discountPercent = 0;
+		this.owner = owner;
 	}
 
 	public Basket updateItem(BasketService.UpdateItemCommand command) {
@@ -127,6 +134,14 @@ public class Basket {
 		this.discountPercent = discountPercent;
 	}
 
+	public User getOwner() {
+		return owner;
+	}
+
+	public void setOwner(User owner) {
+		this.owner = owner;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (o == null || getClass() != o.getClass()) return false;
@@ -139,4 +154,5 @@ public class Basket {
 	public int hashCode() {
 		return Objects.hashCode(id);
 	}
+
 }

@@ -15,24 +15,28 @@ import java.util.List;
 @Service
 public class BasketService {
 
-	private BasketRepository basketRepository;
-	private ItemRepository itemRepository;
+	private final BasketRepository basketRepository;
+	private final ItemRepository itemRepository;
+	private final UserService userService;
 
 	@Autowired
 	public BasketService(
-			BasketRepository basketRepository,
-			ItemRepository itemRepository
-	) {
+            BasketRepository basketRepository,
+            ItemRepository itemRepository,
+			UserService userService
+    ) {
 		this.basketRepository = basketRepository;
 		this.itemRepository = itemRepository;
-	}
+        this.userService = userService;
+    }
 
 	public Basket createBasket(BasketDTO basketDto) {
 		Basket basket = new Basket(
 			basketDto.getId(),
 			basketDto.getItems().stream()
 					.map(it -> new Item(it.getId(), it.getName(), it.getQuantity(), it.getPrice()))
-					.toList()
+					.toList(),
+			userService.getById(basketDto.getOwnerId())
 		);
 		itemRepository.saveAll(basket.getItems());
 		return basketRepository.save(basket);

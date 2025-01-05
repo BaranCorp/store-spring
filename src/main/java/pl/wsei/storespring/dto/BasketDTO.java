@@ -12,6 +12,8 @@ public class BasketDTO {
 
 	Integer discountPercent;
 
+	Long ownerId;
+
 	public static BasketDTO createFrom(Basket basket) {
 		BasketDTO basketDTO = new BasketDTO();
 		basketDTO.id = basket.getId();
@@ -93,5 +95,13 @@ public class BasketDTO {
 
 	public void setDiscountPercent(Integer discountPercent) {
 		this.discountPercent = discountPercent;
+	}
+
+	public Long getOwnerId() {
+		return ownerId;
+	}
+
+	public void setOwnerId(Long ownerId) {
+		this.ownerId = ownerId;
 	}
 }
