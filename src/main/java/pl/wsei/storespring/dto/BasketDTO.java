@@ -19,6 +19,7 @@ public class BasketDTO {
 					itemDTO.setId(it.getId());
 					itemDTO.setName(it.getName());
 					itemDTO.setQuantity(it.getQuantity());
+					itemDTO.setPrice(it.getPrice());
 					return itemDTO;
 				})
 				.collect(Collectors.toList());
@@ -32,6 +33,8 @@ public class BasketDTO {
 		String name;
 
 		Integer quantity;
+
+		Integer price;
 
 		public Long getId() {
 			return id;
@@ -55,6 +58,14 @@ public class BasketDTO {
 
 		public void setQuantity(Integer quantity) {
 			this.quantity = quantity;
+		}
+
+		public Integer getPrice() {
+			return price;
+		}
+
+		public void setPrice(Integer price) {
+			this.price = price;
 		}
 	}
 

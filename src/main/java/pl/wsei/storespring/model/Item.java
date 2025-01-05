@@ -17,23 +17,28 @@ public class Item {
 
     private Integer quantity;
 
+    private Integer price;
+
     @ManyToOne
     private Basket basket;
 
     public Item(
             String name,
-            Integer quantity
+            Integer quantity,
+            Integer price
     ) {
         this.name = name;
         this.quantity = quantity;
+        this.price = price;
     }
 
     public Item(
             Long id,
             String name,
-            Integer quantity
+            Integer quantity,
+            Integer price
     ) {
-        this(name, quantity);
+        this(name, quantity, price);
         this.id = id;
     }
 
@@ -61,6 +66,14 @@ public class Item {
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
+    }
+
+    public Integer getPrice() {
+        return price;
+    }
+
+    public void setPrice(Integer price) {
+        this.price = price;
     }
 
     @Override

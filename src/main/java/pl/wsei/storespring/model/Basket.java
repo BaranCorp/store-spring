@@ -40,6 +40,7 @@ public class Basket {
 		findItemById(command.itemId())
 			.map(it -> {
 				it.setQuantity(command.quantity());
+				it.setPrice(command.price());
 				return it;
 			})
 			.orElseThrow(() -> new ResourceNotFoundException("Item with id: " + command.itemId() + " was not found"));
@@ -51,7 +52,8 @@ public class Basket {
 
 		Item item = new Item(
 			command.name(),
-			command.quantity()
+			command.quantity(),
+			command.price()
 		);
 
 		items.add(item);
@@ -84,6 +86,10 @@ public class Basket {
 		return items.stream()
 				.filter(item -> item.getId().equals(id))
 				.findFirst();
+	}
+
+	public Integer overallPrice() {
+		return items.stream().map(it -> it.getPrice() * it.getQuantity()).reduce(Integer::sum).orElse(0);
 	}
 
 	public Long getId() {

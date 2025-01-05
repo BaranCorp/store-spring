@@ -31,7 +31,7 @@ public class BasketService {
 		Basket basket = new Basket(
 			basketDto.getId(),
 			basketDto.getItems().stream()
-					.map(it -> new Item(it.getId(), it.getName(), it.getQuantity()))
+					.map(it -> new Item(it.getId(), it.getName(), it.getQuantity(), it.getPrice()))
 					.toList()
 		);
 		itemRepository.saveAll(basket.getItems());
@@ -79,14 +79,20 @@ public class BasketService {
 		return basketRepository.save(basketWithItemsToDelete.getLeft());
 	}
 
+	public Integer overallPrice(Long id) {
+		return getById(id).overallPrice();
+	}
+
 	public record UpdateItemCommand(
 		Long itemId,
-		Integer quantity
+		Integer quantity,
+		Integer price
 	) {}
 
 	public record AddItemCommand(
 		String name,
-		Integer quantity
+		Integer quantity,
+		Integer price
 	) {}
 
 	public record RemoveItemCommand(

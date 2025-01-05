@@ -88,4 +88,9 @@ public class BasketController {
 		return ResponseEntity.ok(basketService.clearBasket(id));
 	}
 
+	@GetMapping("/{id}/overall-price")
+	public ResponseEntity<Integer> overallPrice(@PathVariable Long id) {
+		return ResponseEntity.ok(basketService.overallPrice(id));
+	}
+
 }
