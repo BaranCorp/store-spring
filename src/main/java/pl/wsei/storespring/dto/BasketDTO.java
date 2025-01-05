@@ -10,6 +10,8 @@ public class BasketDTO {
 	
 	List<ItemDTO> items;
 
+	Integer discountPercent;
+
 	public static BasketDTO createFrom(Basket basket) {
 		BasketDTO basketDTO = new BasketDTO();
 		basketDTO.id = basket.getId();
@@ -83,5 +85,13 @@ public class BasketDTO {
 
 	public void setItems(List<ItemDTO> items) {
 		this.items = items;
+	}
+
+	public Integer getDiscountPercent() {
+		return discountPercent;
+	}
+
+	public void setDiscountPercent(Integer discountPercent) {
+		this.discountPercent = discountPercent;
 	}
 }

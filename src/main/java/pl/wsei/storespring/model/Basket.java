@@ -26,6 +26,8 @@ public class Basket {
 	@JoinColumn(name = "basket_id")
 	private List<Item> items;
 
+	private Integer discountPercent;
+
 	public Basket() {}
 
 	public Basket(
@@ -34,6 +36,7 @@ public class Basket {
 	) {
 		this.id = id;
 		this.items = items;
+		this.discountPercent = 0;
 	}
 
 	public Basket updateItem(BasketService.UpdateItemCommand command) {
@@ -89,7 +92,15 @@ public class Basket {
 	}
 
 	public Integer overallPrice() {
-		return items.stream().map(it -> it.getPrice() * it.getQuantity()).reduce(Integer::sum).orElse(0);
+		Integer overallPrice = items.stream()
+				.map(it -> it.getPrice() * it.getQuantity())
+				.reduce(Integer::sum)
+				.orElse(0);
+		if (discountPercent > 0) {
+			int discount = (int) (overallPrice * ((double) discountPercent / 100));
+			return overallPrice - discount;
+		}
+		return overallPrice;
 	}
 
 	public Long getId() {
@@ -106,6 +117,14 @@ public class Basket {
 
 	protected void setItems(List<Item> items) {
 		this.items = items;
+	}
+
+	public Integer getDiscountPercent() {
+		return discountPercent;
+	}
+
+	public void setDiscountPercent(Integer discountPercent) {
+		this.discountPercent = discountPercent;
 	}
 
 	@Override

@@ -93,4 +93,12 @@ public class BasketController {
 		return ResponseEntity.ok(basketService.overallPrice(id));
 	}
 
+	@PutMapping("/{id}/apply-discount-command")
+	public ResponseEntity<Basket> applyDiscount(
+		@PathVariable Long id,
+		@RequestBody BasketService.ApplyDiscountCommand command
+	) {
+		return ResponseEntity.ok(basketService.applyDiscount(id, command));
+	}
+
 }

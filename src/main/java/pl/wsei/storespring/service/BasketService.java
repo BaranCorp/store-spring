@@ -44,6 +44,15 @@ public class BasketService {
 		basketRepository.delete(basket);
 	}
 
+	public Basket applyDiscount(
+		Long id,
+		ApplyDiscountCommand command
+	) {
+		Basket basket = getById(id);
+		basket.setDiscountPercent(command.discount());
+		return basketRepository.save(basket);
+	}
+
 	public Basket getById(Long id) {
 		return basketRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Basket not found"));
@@ -97,6 +106,10 @@ public class BasketService {
 
 	public record RemoveItemCommand(
 		Long itemId
+	) {}
+
+	public record ApplyDiscountCommand(
+		Integer discount
 	) {}
 
 }
